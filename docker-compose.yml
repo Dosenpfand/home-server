@@ -32,10 +32,8 @@ services:
     restart: always
     volumes:
       - nextcloud:/var/www/html:z,ro
-    environment:
-      - VIRTUAL_HOST=cloud2.sad.bz
-      - LETSENCRYPT_HOST=cloud2.sad.bz
-      - LETSENCRYPT_EMAIL=m@sad.bz
+    env_file:
+      - web.env
     depends_on:
       - nextcloud-app
     networks:
