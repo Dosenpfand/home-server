@@ -82,6 +82,29 @@ services:
     depends_on:
       - proxy
 
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ=Etc/UTC
+      # - SERVERURL=wireguard.domain.com # TODO!
+      - SERVERPORT=51820
+      - PEERS=1
+      - PEERDNS=auto
+      - ALLOWEDIPS=0.0.0.0/0
+      - PERSISTENTKEEPALIVE_PEERS=all
+      - LOG_CONFS=false
+    volumes:
+      - wireguard_config:/config
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    # TODO: auto-delete peer private keys?
+
 volumes:
   postgres:
   nextcloud:
@@ -89,6 +112,7 @@ volumes:
   acme:
   vhost.d:
   html:
+  wireguard_config:
 
 networks:
   proxy-tier:
