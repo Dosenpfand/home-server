@@ -21,6 +21,7 @@ services:
     environment:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
+      - OVERWRITEPROTOCOL=https
     env_file:
       - postgres.env
     depends_on:
@@ -82,7 +83,6 @@ services:
 
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
-    container_name: wireguard
     cap_add:
       - NET_ADMIN
     environment:
