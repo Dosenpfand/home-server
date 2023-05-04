@@ -13,7 +13,7 @@ services:
     image: redis:alpine
     restart: always
 
-  nextcloud:
+  nextcloud-app:
     image: nextcloud:fpm-alpine
     restart: always
     volumes:
@@ -37,12 +37,12 @@ services:
       - LETSENCRYPT_HOST=cloud2.sad.bz
       - LETSENCRYPT_EMAIL=m@sad.bz
     depends_on:
-      - nextcloud
+      - nextcloud-app
     networks:
       - proxy-tier
       - default
 
-  cron:
+  nextcloud-cron:
     image: nextcloud:fpm-alpine
     restart: always
     volumes:
