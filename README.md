@@ -35,6 +35,12 @@ LETSENCRYPT_HOST=
 LETSENCRYPT_EMAIL=
 ```
 
+### wireguard.env
+
+```
+SERVERURL= #Optional
+```
+
 ## Deploy
 
 ```
