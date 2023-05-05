@@ -103,6 +103,12 @@ services:
     restart: unless-stopped
     # TODO: auto-delete peer private keys?
 
+  dyndns:
+    build: ./dyndns
+    restart: always
+    env_file:
+      - dyndns.env
+
 volumes:
   postgres:
   nextcloud:
