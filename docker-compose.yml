@@ -97,7 +97,7 @@ services:
     env_file:
       - wireguard.env
     volumes:
-      - wireguard_config:/config
+      - wireguard_config:/config:z
     ports:
       - 51820:51820/udp
     sysctls:
@@ -110,6 +110,21 @@ services:
     env_file:
       - dyndns.env
 
+  backup:
+    build: ./backup
+    restart: always
+    env_file:
+      - backup.env
+    volumes:
+      - wireguard_config:/data/wireguard_config:z,ro
+      - postgres:/data/postgres:z,ro
+      - nextcloud:/data/nextcloud:z,ro
+      - certs:/data/certs:z,ro
+      - vhost.d:/data/vhost.d:z,ro
+      - html:/data/html:z,ro
+      - acme:/data/acme.sh:z,ro
+      - backup_logs:/data/backup_logs
+
 volumes:
   postgres:
   nextcloud:
@@ -118,6 +133,8 @@ volumes:
   vhost.d:
   html:
   wireguard_config:
+  backup_logs:
+
 
 networks:
   proxy-tier:
