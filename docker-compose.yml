@@ -88,13 +88,14 @@ services:
       - NET_ADMIN
     environment:
       - TZ=Etc/UTC
-      # - SERVERURL=wireguard.domain.com # TODO!
       - SERVERPORT=51820
       - PEERS=1
       - PEERDNS=auto
       - ALLOWEDIPS=0.0.0.0/0
       - PERSISTENTKEEPALIVE_PEERS=all
       - LOG_CONFS=false
+    env_file:
+      - wireguard.env
     volumes:
       - wireguard_config:/config
     ports:
