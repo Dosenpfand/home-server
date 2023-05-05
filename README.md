@@ -7,7 +7,7 @@ Container configuration for a home server setup.
 * Nextcloud
 * DynDNS update for Hetzner DNS
 * WireGuard
-* Backup usting restic
+* Backup using restic
 
 ## Configuration
 
