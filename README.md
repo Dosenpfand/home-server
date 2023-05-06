@@ -38,7 +38,8 @@ LETSENCRYPT_EMAIL=
 ### wireguard.env
 
 ```
-SERVERURL= #Optional
+WG_HOST=
+PASSWORD=
 ```
 
 ## Deploy
