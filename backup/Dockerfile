@@ -1,13 +1,15 @@
 FROM alpine
 
-RUN apk add restic --no-cache 
+RUN apk add restic postgresql-client --no-cache 
 
 COPY backup.sh /backup.sh
 RUN chmod +x /backup.sh
 
-COPY cron.sh /cron.sh
-RUN chmod +x /cron.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 RUN rm /var/spool/cron/crontabs/root
 RUN echo '0 3 * * * ash /backup.sh' > /var/spool/cron/crontabs/root
 
-ENTRYPOINT [ "/cron.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+CMD busybox crond -f -l 0 -L /dev/stdout

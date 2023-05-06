@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 set -eu
 
 # usage: file_env VAR [DEFAULT]
@@ -25,10 +25,14 @@ file_env() {
     unset "$fileVar"
 }
 
-file_env RESTIC_REPO
-file_env RESTIC_PASSWORD
-file_env AWS_ACCESS_KEY_ID
-file_env AWS_SECRET_ACCESS_KEY
-file_env GOMAXPROCS
+_main() {
+    file_env RESTIC_REPO
+    file_env RESTIC_PASSWORD
+    file_env AWS_ACCESS_KEY_ID
+    file_env AWS_SECRET_ACCESS_KEY
+    file_env GOMAXPROCS
 
-exec busybox crond -f -l 0 -L /dev/stdout
+    exec "$@"
+}
+
+_main "$@"
