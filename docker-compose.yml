@@ -67,7 +67,7 @@ services:
     networks:
       - proxy-tier
 
-  letsencrypt-companion:
+  letsencrypt:
     image: nginxproxy/acme-companion
     restart: always
     volumes:
