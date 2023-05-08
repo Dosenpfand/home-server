@@ -104,6 +104,7 @@ services:
 
   backup:
     build: ./backup
+    hostname: home-server-backup
     restart: always
     env_file:
       - backup.env
