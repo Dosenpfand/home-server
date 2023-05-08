@@ -4,6 +4,9 @@ services:
   postgres:
     image: postgres:alpine
     restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data:Z
+      - backup_postgres:/data/backup_postgres:z,ro
     env_file:
       - postgres.env
 
@@ -116,10 +119,11 @@ services:
       - vhost.d:/data/vhost.d:z,ro
       - html:/data/html:z,ro
       - acme:/data/acme.sh:z,ro
-      - backup_postgres:/data/backup_postgres
+      - backup_postgres:/data/backup_postgres:z
       - backup_logs:/data/backup_logs
 
 volumes:
+  postgres:
   nextcloud:
   certs:
   acme:
