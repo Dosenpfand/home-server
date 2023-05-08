@@ -113,14 +113,27 @@ services:
       - backup.env
       - postgres.env
     volumes:
+      - backup_postgres:/data/backup_postgres:z
+      - backup_logs:/data/backup_logs
       - wireguard_config:/data/wireguard_config:z,ro
       - nextcloud:/data/nextcloud:z,ro
       - certs:/data/certs:z,ro
       - vhost.d:/data/vhost.d:z,ro
       - html:/data/html:z,ro
       - acme:/data/acme.sh:z,ro
-      - backup_postgres:/data/backup_postgres:z
-      - backup_logs:/data/backup_logs
+      - deluge_config:/data/deluge_config:z,ro
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    restart: always
+    volumes:
+      - deluge_config:/config:z
+      - deluge_dowloads:/downloads
+    ports:
+      - 58846:58846 # daemon
+      - 8112:8112 # web ui
+      - 43289:43289 # data
+      - 43289:43289/udp # data
 
 volumes:
   postgres:
@@ -132,6 +145,9 @@ volumes:
   wireguard_config:
   backup_postgres:
   backup_logs:
+  deluge_config:
+  deluge_dowloads:
+
 
 
 networks:

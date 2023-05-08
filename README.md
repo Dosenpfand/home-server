@@ -8,6 +8,7 @@ Container configuration for a home server setup.
 * DynDNS update for Hetzner DNS
 * WireGuard
 * Backup using restic
+* Torrent using deluge
 
 ## Configuration
 
