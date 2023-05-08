@@ -9,6 +9,7 @@ Container configuration for a home server setup.
 * WireGuard
 * Backup using restic
 * Torrent using deluge
+* Media server using jellyfin
 
 ## Configuration
 
