@@ -90,8 +90,8 @@ services:
     volumes:
       - wireguard_config:/etc/wireguard
     ports:
-      - "51820:51820/udp"
-      - "51821:51821/tcp"
+      - 51820:51820/udp
+      - 51821:51821/tcp
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -122,18 +122,28 @@ services:
       - html:/data/html:z,ro
       - acme:/data/acme.sh:z,ro
       - deluge_config:/data/deluge_config:z,ro
+      - jellyfin_config:/data/jellyfin_config:z,ro
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
     restart: always
     volumes:
       - deluge_config:/config:z
-      - deluge_dowloads:/downloads
+      - deluge_dowloads:/downloads:z
     ports:
       - 58846:58846 # daemon
       - 8112:8112 # web ui
       - 43289:43289 # data
       - 43289:43289/udp # data
+
+  jellyfin:
+    image: jellyfin/jellyfin
+    restart: always
+    network_mode: host
+    volumes:
+      - jellyfin_config:/config:z
+      - jellyfin_cache:/cache
+      - deluge_dowloads:/media:z,ro
 
 volumes:
   postgres:
@@ -147,6 +157,8 @@ volumes:
   backup_logs:
   deluge_config:
   deluge_dowloads:
+  jellyfin_config:
+  jellyfin_cache:
 
 
 
