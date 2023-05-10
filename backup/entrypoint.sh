@@ -26,7 +26,7 @@ file_env() {
 }
 
 _main() {
-    file_env RESTIC_REPO
+    file_env RESTIC_REPOSITORY
     file_env RESTIC_PASSWORD
     file_env AWS_ACCESS_KEY_ID
     file_env AWS_SECRET_ACCESS_KEY

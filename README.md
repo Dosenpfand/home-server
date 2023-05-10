@@ -44,6 +44,16 @@ WG_HOST=
 PASSWORD=
 ```
 
+### backup.env
+
+```
+RESTIC_REPOSITORY=
+RESTIC_PASSWORD=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+GOMAXPROCS=1
+```
+
 ## Deploy
 
 ```
