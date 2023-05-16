@@ -82,13 +82,28 @@ services:
     depends_on:
       - proxy
 
-  wireguard:
+  wireguard-private:
+    image: weejewel/wg-easy
+    restart: always
+    environment:
+      - WG_PORT=51822
+      - PORT=51823
+    env_file:
+      - wireguard.env
+    volumes:
+      - wireguard_config_private:/etc/wireguard
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+
+  wireguard-public:
     image: weejewel/wg-easy
     restart: always
     env_file:
       - wireguard.env
     volumes:
-      - wireguard_config:/etc/wireguard
+      - wireguard_config_public:/etc/wireguard
     ports:
       - 51820:51820/udp
       - 51821:51821/tcp
@@ -115,7 +130,8 @@ services:
     volumes:
       - backup_postgres:/data/backup_postgres:z
       - backup_logs:/data/backup_logs
-      - wireguard_config:/data/wireguard_config:z,ro
+      - wireguard_config_private:/data/wireguard_config_private:z,ro
+      - wireguard_config_public:/data/wireguard_config_public:z,ro
       - nextcloud:/data/nextcloud:z,ro
       - certs:/data/certs:z,ro
       - vhost.d:/data/vhost.d:z,ro
@@ -139,7 +155,8 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     restart: always
-    network_mode: host
+    ports:
+      - 8096:8096
     volumes:
       - jellyfin_config:/config:z
       - jellyfin_cache:/cache
@@ -152,14 +169,14 @@ volumes:
   acme:
   vhost.d:
   html:
-  wireguard_config:
+  wireguard_config_private:
+  wireguard_config_public:
   backup_postgres:
   backup_logs:
   deluge_config:
   deluge_dowloads:
   jellyfin_config:
   jellyfin_cache:
-
 
 
 networks:
