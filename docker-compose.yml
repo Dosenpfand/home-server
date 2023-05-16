@@ -85,9 +85,6 @@ services:
   wireguard-private:
     image: weejewel/wg-easy
     restart: always
-    environment:
-      - WG_PORT=51822
-      - PORT=51823
     env_file:
       - wireguard.env
     volumes:
@@ -100,13 +97,16 @@ services:
   wireguard-public:
     image: weejewel/wg-easy
     restart: always
+    environment:
+      - WG_PORT=51822
+      - PORT=51823
     env_file:
       - wireguard.env
     volumes:
       - wireguard_config_public:/etc/wireguard
     ports:
-      - 51820:51820/udp
-      - 51821:51821/tcp
+      - 51822:51820/udp
+      - 51823:51823/tcp
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
