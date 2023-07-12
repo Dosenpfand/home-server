@@ -162,6 +162,24 @@ services:
       - jellyfin_cache:/cache
       - deluge_dowloads:/media:z,ro
 
+  nominatim:
+    image: mediagis/nominatim:4.2
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+    environment:
+      - VIRTUAL_HOST=nominatim.sad.bz
+      - LETSENCRYPT_HOST=nominatim.sad.bz
+      - PBF_URL=https://download.geofabrik.de/europe/austria-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/europe/austria-updates/
+    volumes:
+      - nominatim:/var/lib/postgresql/14/main
+    shm_size: 512mb
+
 volumes:
   postgres:
   nextcloud:
@@ -177,6 +195,7 @@ volumes:
   deluge_dowloads:
   jellyfin_config:
   jellyfin_cache:
+  nominatim:
 
 
 networks:

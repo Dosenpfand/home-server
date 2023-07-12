@@ -10,6 +10,7 @@ Container configuration for a home server setup.
 * Backup using restic
 * Torrent using deluge
 * Media server using jellyfin
+* Geocoder using Nominatim
 
 ## Configuration
 
