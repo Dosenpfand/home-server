@@ -179,6 +179,7 @@ services:
     volumes:
       - nominatim:/var/lib/postgresql/14/main
     shm_size: 512mb
+    # TODO: cron update
 
 volumes:
   postgres:
