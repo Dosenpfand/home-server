@@ -163,7 +163,7 @@ services:
       - deluge_dowloads:/media:z,ro
 
   nominatim:
-    image: mediagis/nominatim:4.2
+    build: ./nominatim
     restart: always
     ports:
       - 8081:8080
