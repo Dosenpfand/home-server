@@ -173,6 +173,7 @@ services:
       - proxy
     environment:
       - VIRTUAL_HOST=nominatim.sad.bz
+      - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=nominatim.sad.bz
       - PBF_URL=https://download.geofabrik.de/europe/austria-latest.osm.pbf
       - REPLICATION_URL=https://download.geofabrik.de/europe/austria-updates/
