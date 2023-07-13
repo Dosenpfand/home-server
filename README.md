@@ -11,6 +11,7 @@ Container configuration for a home server setup.
 * Torrent using deluge
 * Media server using jellyfin
 * Geocoder using Nominatim
+* Flask web apps
 
 ## Configuration
 
