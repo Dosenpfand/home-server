@@ -12,6 +12,7 @@ Container configuration for a home server setup.
 * Media server using jellyfin
 * Geocoder using Nominatim
 * Flask web apps
+* Photo archiving using Immich
 
 ## Configuration
 
@@ -45,6 +46,10 @@ LETSENCRYPT_EMAIL=
 WG_HOST=
 PASSWORD=
 ```
+
+## immich.env
+
+TODO
 
 ### backup.env
 

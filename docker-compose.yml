@@ -227,7 +227,103 @@ services:
   #     - VIRTUAL_PORT=80
   #     - LETSENCRYPT_HOST=staging.zug.lol
 
-  # TODO: immich.app
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    command: [ "start.sh", "immich" ]
+    volumes:
+      - immich_uploads:/usr/src/app/upload
+    env_file:
+      - immich.env
+    networks:
+      - immich
+    depends_on:
+      - immich-redis
+      - immich-database
+      - immich-typesense
+    restart: always
+
+  immich-microservices:
+    image: ghcr.io/immich-app/immich-server:release
+    command: [ "start.sh", "microservices" ]
+    volumes:
+      - immich_uploads:/usr/src/app/upload
+    env_file:
+      - immich.env
+    networks:
+      - immich
+    depends_on:
+      - immich-redis
+      - immich-database
+      - immich-typesense
+    restart: always
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    volumes:
+      - immich_model_cache:/cache
+    env_file:
+      - immich.env
+    networks:
+      - immich
+    restart: always
+
+  immich-web:
+    image: ghcr.io/immich-app/immich-web:release
+    env_file:
+      - immich.env
+    networks:
+      - immich
+    restart: always
+
+  immich-typesense:
+    image: typesense/typesense:0.24.1@sha256:9bcff2b829f12074426ca044b56160ca9d777a0c488303469143dd9f8259d4dd
+    environment:
+      - TYPESENSE_DATA_DIR=/data
+    env_file:
+      - immich.env
+    volumes:
+      - immich_typesense:/data
+    networks:
+      - immich
+    restart: always
+
+  immich-redis:
+    image: redis:6.2-alpine@sha256:70a7a5b641117670beae0d80658430853896b5ef269ccf00d1827427e3263fa3
+    networks:
+      - immich
+    restart: always
+
+  immich-database:
+    image: postgres:14-alpine@sha256:28407a9961e76f2d285dc6991e8e48893503cc3836a4755bbc2d40bcc272a441
+    networks:
+      - immich
+    env_file:
+      - immich.env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - immich_postgres:/var/lib/postgresql/data
+    restart: always
+
+  immich-proxy:
+    image: ghcr.io/immich-app/immich-proxy:release
+    networks:
+      - immich
+      - proxy-tier
+    environment:
+      - IMMICH_SERVER_URL=http://immich-server:3001
+      - IMMICH_WEB_URL=http://immich-web:3000
+      - VIRTUAL_HOST=photos.sad.bz
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=photos.sad.bz
+    ports:
+      - 2283:8080
+    depends_on:
+      - proxy
+      - immich-server
+      - immich-web
+    restart: always
+
 
 volumes:
   postgres:
@@ -245,9 +341,14 @@ volumes:
   jellyfin_config:
   jellyfin_cache:
   nominatim:
-
+  # TODO: include in backup
+  immich_uploads:
+  immich_postgres:
+  immich_model_cache:
+  immich_typesense:
 
 networks:
   proxy-tier:
   postgres:
   nextcloud:
+  immich:
