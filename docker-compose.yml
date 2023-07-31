@@ -324,6 +324,43 @@ services:
       - immich-web
     restart: always
 
+  changedetection-app:
+      image: ghcr.io/dgtlmoon/changedetection.io
+      volumes:
+        - changedetection_data:/datastore
+      environment:
+        - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000/?stealth=1&--disable-web-security=true
+        - BASE_URL=https://changedetection.sad.bz
+        - VIRTUAL_HOST=changedetection.sad.bz
+        - VIRTUAL_PORT=5000
+        - LETSENCRYPT_HOST=changedetection.sad.bz
+      networks:
+        - changedetection
+        - proxy-tier
+      restart: always
+      depends_on:
+        - proxy
+        - playwright-chrome
+
+  playwright-chrome:
+      image: browserless/chrome
+      shm_size: 2gb
+      environment:
+          - SCREEN_WIDTH=1920
+          - SCREEN_HEIGHT=1024
+          - SCREEN_DEPTH=16
+          - ENABLE_DEBUGGER=false
+          - PREBOOT_CHROME=true
+          - CONNECTION_TIMEOUT=300000
+          - MAX_CONCURRENT_SESSIONS=10
+          - CHROME_REFRESH_TIME=600000
+          - DEFAULT_BLOCK_ADS=true
+          - DEFAULT_STEALTH=true
+          - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      networks:
+        - changedetection
+      restart: always
+
 
 volumes:
   postgres: # TODO: rename without losing data!
@@ -345,8 +382,10 @@ volumes:
   immich_postgres:
   immich_model_cache:
   immich_typesense:
+  changedetection_data:
 
 networks:
   proxy-tier:
   nextcloud:
   immich:
+  changedetection:
