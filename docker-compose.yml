@@ -1,18 +1,18 @@
 version: '3'
 
 services:
-  postgres:
+  nextcloud-postgres:
     image: postgres:alpine
     restart: always
     volumes:
-      - postgres:/var/lib/postgresql/data:Z
-      - backup_postgres:/data/backup_postgres:z,ro
+      - postgres:/var/lib/postgresql/data
+      - backup_postgres:/data/backup_postgres:ro
     networks:
-      - postgres
+      - nextcloud
     env_file:
-      - postgres.env
+      - nextcloud.env
 
-  redis:
+  nextcloud-redis:
     image: redis:alpine
     restart: always
     networks:
@@ -22,46 +22,43 @@ services:
     image: nextcloud:fpm-alpine
     restart: always
     volumes:
-      - nextcloud:/var/www/html:z
+      - nextcloud:/var/www/html
     environment:
-      - POSTGRES_HOST=postgres
-      - REDIS_HOST=redis
+      - POSTGRES_HOST=nextcloud-postgres
+      - REDIS_HOST=nextcloud-redis
       - OVERWRITEPROTOCOL=https
     env_file:
-      - postgres.env
+      - nextcloud.env
     depends_on:
-      - postgres
-      - redis
+      - nextcloud-postgres
+      - nextcloud-redis
     networks:
       - nextcloud
-      - postgres
 
-  web:
-    build: ./web
+  nextcloud-web:
+    build: ./nextcloud-web
     restart: always
     volumes:
-      - nextcloud:/var/www/html:z,ro
+      - nextcloud:/var/www/html:ro
     env_file:
-      - web.env
+      - nextcloud.env
     depends_on:
       - nextcloud-app
       - proxy
     networks:
       - proxy-tier
-      - postgres
       - nextcloud
 
   nextcloud-cron:
     image: nextcloud:fpm-alpine
     restart: always
     volumes:
-      - nextcloud:/var/www/html:z
+      - nextcloud:/var/www/html
     entrypoint: /cron.sh
     depends_on:
-      - postgres
-      - redis
+      - nextcloud-postgres
+      - nextcloud-redis
     networks:
-      - postgres
       - nextcloud
 
   proxy:
@@ -73,10 +70,10 @@ services:
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
     volumes:
-      - certs:/etc/nginx/certs:z,ro
-      - vhost.d:/etc/nginx/vhost.d:z
-      - html:/usr/share/nginx/html:z
-      - /var/run/docker.sock:/tmp/docker.sock:z,ro
+      - certs:/etc/nginx/certs:ro
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       - proxy-tier
 
@@ -84,11 +81,11 @@ services:
     image: nginxproxy/acme-companion
     restart: always
     volumes:
-      - certs:/etc/nginx/certs:z
-      - acme:/etc/acme.sh:z
-      - vhost.d:/etc/nginx/vhost.d:z
-      - html:/usr/share/nginx/html:z
-      - /var/run/docker.sock:/var/run/docker.sock:z,ro
+      - certs:/etc/nginx/certs
+      - acme:/etc/acme.sh
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - proxy-tier
     depends_on:
@@ -138,28 +135,31 @@ services:
     restart: always
     env_file:
       - backup.env
-      - postgres.env
+      - immich.env
+      - nextcloud.env
     volumes:
-      - backup_postgres:/data/backup_postgres:z
+      - backup_postgres:/data/backup_postgres
       - backup_logs:/data/backup_logs
-      - wireguard_config_private:/data/wireguard_config_private:z,ro
-      - wireguard_config_public:/data/wireguard_config_public:z,ro
-      - nextcloud:/data/nextcloud:z,ro
-      - certs:/data/certs:z,ro
-      - vhost.d:/data/vhost.d:z,ro
-      - html:/data/html:z,ro
-      - acme:/data/acme.sh:z,ro
-      - deluge_config:/data/deluge_config:z,ro
-      - jellyfin_config:/data/jellyfin_config:z,ro
+      - wireguard_config_private:/data/wireguard_config_private:ro
+      - wireguard_config_public:/data/wireguard_config_public:ro
+      - nextcloud:/data/nextcloud:ro
+      - certs:/data/certs:ro
+      - vhost.d:/data/vhost.d:ro
+      - html:/data/html:ro
+      - acme:/data/acme.sh:ro
+      - deluge_config:/data/deluge_config:ro
+      - jellyfin_config:/data/jellyfin_config:ro
+      - immich_uploads:/data/immich_uploads:ro
     networks:
-      - postgres
+      - nextcloud
+      - immich
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
     restart: always
     volumes:
-      - deluge_config:/config:z
-      - deluge_dowloads:/downloads:z
+      - deluge_config:/config
+      - deluge_dowloads:/downloads
     ports:
       - 58846:58846 # daemon
       - 8112:8112 # web ui
@@ -172,9 +172,9 @@ services:
     ports:
       - 8096:8096
     volumes:
-      - jellyfin_config:/config:z
+      - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - deluge_dowloads:/media:z,ro
+      - deluge_dowloads:/media:ro
 
   nominatim:
     build: ./nominatim
@@ -276,7 +276,7 @@ services:
     restart: always
 
   immich-typesense:
-    image: typesense/typesense:0.24.1@sha256:9bcff2b829f12074426ca044b56160ca9d777a0c488303469143dd9f8259d4dd
+    image: typesense/typesense:0.24.1
     environment:
       - TYPESENSE_DATA_DIR=/data
     env_file:
@@ -288,13 +288,13 @@ services:
     restart: always
 
   immich-redis:
-    image: redis:6.2-alpine@sha256:70a7a5b641117670beae0d80658430853896b5ef269ccf00d1827427e3263fa3
+    image: redis:6.2-alpine
     networks:
       - immich
     restart: always
 
   immich-database:
-    image: postgres:14-alpine@sha256:28407a9961e76f2d285dc6991e8e48893503cc3836a4755bbc2d40bcc272a441
+    image: postgres:14-alpine
     networks:
       - immich
     env_file:
@@ -326,7 +326,7 @@ services:
 
 
 volumes:
-  postgres:
+  postgres: # TODO: rename without losing data!
   nextcloud:
   certs:
   acme:
@@ -341,7 +341,6 @@ volumes:
   jellyfin_config:
   jellyfin_cache:
   nominatim:
-  # TODO: include in backup
   immich_uploads:
   immich_postgres:
   immich_model_cache:
@@ -349,6 +348,5 @@ volumes:
 
 networks:
   proxy-tier:
-  postgres:
   nextcloud:
   immich:
