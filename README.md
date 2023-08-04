@@ -68,6 +68,11 @@ PUBLIC_LOGIN_PAGE_MESSAGE=
 
 IMMICH_API_URL_EXTERNAL=
 ```
+### letsencrypt.env
+
+```
+DEFAULT_EMAIL=
+```
 
 ### backup.env
 

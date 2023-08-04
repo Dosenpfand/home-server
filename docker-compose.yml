@@ -80,6 +80,7 @@ services:
   letsencrypt:
     image: nginxproxy/acme-companion
     restart: unless-stopped
+    env_file: letsencrypt.env
     volumes:
       - certs:/etc/nginx/certs
       - acme:/etc/acme.sh
