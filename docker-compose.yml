@@ -40,6 +40,9 @@ services:
     restart: unless-stopped
     volumes:
       - nextcloud:/var/www/html:ro
+    environment:
+      - VIRTUAL_HOST=cloud.sad.bz
+      - LETSENCRYPT_HOST=cloud.sad.bz
     env_file:
       - nextcloud.env
     depends_on:
