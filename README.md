@@ -85,3 +85,8 @@ GOMAXPROCS=1
 ```
 DOCKER_HOST="ssh://user@host" docker-compose up --build -d
 ```
+
+## Power / Energy consumption
+
+On an "Intel NUC 12 Pro Kit - NUC12WSHi3" during August 2023 `7.83 W` or `68.61 kWh/y`.
+This equates to roughly `15-20`` € yearly energy cost.
