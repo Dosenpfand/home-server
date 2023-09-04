@@ -154,6 +154,7 @@ services:
       - deluge_config:/data/deluge_config:ro
       - jellyfin_config:/data/jellyfin_config:ro
       - immich_uploads:/data/immich_uploads:ro
+      - zib2_static:/data/zib2_static:ro
     networks:
       - nextcloud
       - immich
@@ -363,6 +364,21 @@ services:
         - changedetection
       restart: unless-stopped
 
+  zib2:
+    build: https://github.com/Dosenpfand/zib2-podcast.git
+    restart: unless-stopped
+    ports:
+      - 8084:80
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+    environment:
+      - VIRTUAL_HOST=zib2.sad.bz
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=zib2.sad.bz
+    volumes:
+        - zib2_static:/code/app/static
 
 volumes:
   postgres: # TODO: rename without losing data!
@@ -385,6 +401,7 @@ volumes:
   immich_model_cache:
   immich_typesense:
   changedetection_data:
+  zib2_static:
 
 networks:
   proxy-tier:
