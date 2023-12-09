@@ -237,9 +237,17 @@ services:
       - immich_uploads:/usr/src/app/upload
     env_file:
       - immich.env
+    environment:
+      - VIRTUAL_HOST=photos.sad.bz
+      - VIRTUAL_PORT=3001
+      - LETSENCRYPT_HOST=photos.sad.bz
+    ports:
+      - 2283:3001
     networks:
       - immich
+      - proxy-tier
     depends_on:
+      - proxy
       - immich-redis
       - immich-database
       - immich-typesense
@@ -264,14 +272,6 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:release
     volumes:
       - immich_model_cache:/cache
-    env_file:
-      - immich.env
-    networks:
-      - immich
-    restart: unless-stopped
-
-  immich-web:
-    image: ghcr.io/immich-app/immich-web:release
     env_file:
       - immich.env
     networks:
@@ -306,25 +306,6 @@ services:
       PG_DATA: /var/lib/postgresql/data
     volumes:
       - immich_postgres:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  immich-proxy:
-    image: ghcr.io/immich-app/immich-proxy:release
-    networks:
-      - immich
-      - proxy-tier
-    environment:
-      - IMMICH_SERVER_URL=http://immich-server:3001
-      - IMMICH_WEB_URL=http://immich-web:3000
-      - VIRTUAL_HOST=photos.sad.bz
-      - VIRTUAL_PORT=8080
-      - LETSENCRYPT_HOST=photos.sad.bz
-    ports:
-      - 2283:8080
-    depends_on:
-      - proxy
-      - immich-server
-      - immich-web
     restart: unless-stopped
 
   changedetection-app:
