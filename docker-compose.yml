@@ -358,6 +358,8 @@ services:
       - VIRTUAL_HOST=zib2.sad.bz
       - VIRTUAL_PORT=80
       - LETSENCRYPT_HOST=zib2.sad.bz
+    env_file:
+      - zib2.env
     volumes:
         - zib2_static:/code/app/static
 
