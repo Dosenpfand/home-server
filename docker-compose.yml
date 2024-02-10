@@ -349,6 +349,19 @@ services:
     volumes:
         - zib2_static:/code/app/static
 
+  zib2-cron:
+    build: https://github.com/Dosenpfand/zib2-podcast.git
+    restart: unless-stopped
+    depends_on:
+      - proxy
+    env_file:
+      - zib2.env
+    volumes:
+        - zib2_static:/code/app/static
+    command: bash -c "/code/create_env.sh; exec cron -f"
+    init: true
+
+
 volumes:
   postgres: # TODO: rename without losing data!
   nextcloud:
