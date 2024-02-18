@@ -361,6 +361,53 @@ services:
     command: bash -c "/code/create_env.sh; exec cron -f"
     init: true
 
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:latest
+    container_name: bitmagnet
+    ports:
+      # API and WebUI port:
+      - "3333:3333"
+      # BitTorrent ports:
+      - "3334:3334/tcp"
+      - "3334:3334/udp"
+    networks:
+      - bitmagnet
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=bitmagnet-postgres
+    env_file:
+      - bitmagnet.env
+    command:
+      - worker
+      - run
+      - --keys=http_server
+      - --keys=queue_server
+      - --keys=dht_crawler
+    depends_on:
+      bitmagnet-postgres:
+        condition: service_healthy
+
+  bitmagnet-postgres:
+    image: postgres:16-alpine
+    container_name: bitmagnet-postgres
+    volumes:
+      # TODO: Add to backup
+      - bitmagnet_db:/var/lib/postgresql/data
+    networks:
+      - bitmagnet
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=bitmagnet
+      - PGUSER=postgres
+    env_file:
+      - bitmagnet.env
+    shm_size: 1g
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready
+      start_period: 20s
+      interval: 10s
 
 volumes:
   postgres: # TODO: rename without losing data!
@@ -383,9 +430,11 @@ volumes:
   immich_model_cache:
   changedetection_data:
   zib2_static:
+  bitmagnet_db:
 
 networks:
   proxy-tier:
   nextcloud:
   immich:
   changedetection:
+  bitmagnet:
