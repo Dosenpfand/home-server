@@ -9,7 +9,6 @@ Container configuration for a home server setup.
 * WireGuard
 * Backup using restic
 * Torrent using deluge
-* Torrent indexing using bitmagnet
 * Media server using jellyfin
 * Geocoder using Nominatim
 * Flask web apps
@@ -80,13 +79,6 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 GOMAXPROCS=1
 ```
-
-### bitmagnet.env
-
-```
-POSTGRES_PASSWORD=
-```
-
 ## Deploy
 
 ```
