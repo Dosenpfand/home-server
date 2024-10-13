@@ -14,6 +14,7 @@ Container configuration for a home server setup.
 * Flask web apps
 * Photo archiving using Immich
 * Website watches via changedetection.io
+* Hosting zug.lol
 
 ## Configuration
 
@@ -79,7 +80,43 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 GOMAXPROCS=1
 ```
+
+### zug-lol.env
+
+```
+POSTGRES_USER=zug
+POSTGRES_PASSWORD=
+POSTGRES_DB=zug
+FLASK_SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@zug-lol-db:5432/${POSTGRES_DB}
+ZUG_DB_USERNAME=${POSTGRES_USER}
+ZUG_DB_PASSWORD=${POSTGRES_PASSWORD}
+FLASK_SECRET_KEY=
+FLASK_SECURITY_PASSWORD_SALT='""'
+FLASK_RECAPTCHA_PUBLIC_KEY=""
+FLASK_RECAPTCHA_PRIVATE_KEY=""
+SENTRY_DSN=""
+HETZNER_AUTH_API_TOKEN=
+HETZNER_ZONE_NAME=zug.lol
+HETZNER_RECORD_NAME=@
+```
+
 ## Deploy
+
+### Setup host
+
+1. Install latest Debian
+2. Install Docker: https://docs.docker.com/engine/install/debian/#install-using-the-repository
+3. Install dependencies:
+    ```
+    sudo apt-get install avahi-daemon avahi-utils rsync htop
+    ```
+4. Deploy SSH key
+   ```
+   ssh-copy-id -i id_rsa.pub m@$host
+   ```
+5. Adapt sshd config: Increase `MaxStartups`, `MaxSessions`;
+
+### Run containers
 
 ```
 DOCKER_HOST="ssh://user@host" docker-compose up --build -d

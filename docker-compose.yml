@@ -137,6 +137,7 @@ services:
     restart: unless-stopped
     env_file:
       - backup.env
+      - zug-lol.env
       - immich.env
       - nextcloud.env
     volumes:
@@ -156,6 +157,7 @@ services:
     networks:
       - nextcloud
       - immich
+      - zug-lol
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
@@ -227,6 +229,67 @@ services:
       - VIRTUAL_HOST=staging.zug.lol
       - VIRTUAL_PORT=80
       - LETSENCRYPT_HOST=staging.zug.lol
+
+  zug-lol-app:
+    build: https://github.com/Dosenpfand/zug-lol.git
+    restart: unless-stopped
+    ports:
+      - 8085:80
+    environment:
+      - VIRTUAL_HOST=zug.lol,www.zug.lol
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=zug.lol,www.zug.lol
+    env_file:
+      - zug-lol.env
+    depends_on:
+        zug-lol-db:
+          condition: service_healthy
+        proxy:
+          condition: service_started
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      start_period: 10s
+      interval: 5m
+      timeout: 5s
+      retries: 10
+    networks:
+      - proxy-tier
+      - zug-lol
+
+  zug-lol-cron:
+    build: https://github.com/Dosenpfand/zug-lol.git
+    restart: unless-stopped
+    env_file:
+      - zug-lol.env
+    depends_on:
+      zug-lol-db:
+        condition: service_healthy
+    command: sh -c "bash /root/create_env.sh; cron -f & touch /var/log/cron.log && tail -f /var/log/cron.log"
+    networks:
+      - zug-lol
+
+  zug-lol-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    env_file:
+      - zug-lol.env
+    volumes:
+      - zug-lol-backup-restore:/docker-entrypoint-initdb.d
+      - zug-lol-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - zug-lol
+
+  zug-lol-dyndns:
+    build: ./dyndns
+    restart: unless-stopped
+    env_file:
+      - zug-lol.env
 
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
@@ -365,9 +428,12 @@ volumes:
   immich_model_cache:
   changedetection_data:
   zib2_static:
+  zug-lol-db:
+  zug-lol-backup-restore:
 
 networks:
   proxy-tier:
   nextcloud:
   immich:
   changedetection:
+  zug-lol:
