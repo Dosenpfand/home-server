@@ -19,7 +19,7 @@ echo "### START backup from: ${TIMESTAMP} ###" >> ${BACKUP_LOG_STDOUT}
     || true
 
 (PGPASSWORD=${ZUG_DB_PASSWORD} pg_dumpall -h zug-lol-db -U ${ZUG_DB_USERNAME} | gzip) \
-    > /data/backup_postgres/postgresql_backup_immich.sql.gz 2>> ${BACKUP_LOG_STDERR} \
+    > /data/backup_postgres/postgresql_backup_zug-lol.sql.gz 2>> ${BACKUP_LOG_STDERR} \
     || true
 
 restic snapshots 2>> ${BACKUP_LOG_STDERR} 1>> ${BACKUP_LOG_STDOUT} \
