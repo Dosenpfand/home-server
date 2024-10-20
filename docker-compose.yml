@@ -140,6 +140,7 @@ services:
       - zug-lol.env
       - immich.env
       - nextcloud.env
+      - matheworkout.env
     volumes:
       - backup_postgres:/data/backup_postgres
       - backup_logs:/data/backup_logs
@@ -154,6 +155,7 @@ services:
       - jellyfin_config:/data/jellyfin_config:ro
       - immich_uploads:/data/immich_uploads:ro
       - zib2_static:/data/zib2_static:ro
+      - matheworkout-static:/data/matheworkout-static:ro
     networks:
       - nextcloud
       - immich
@@ -277,7 +279,7 @@ services:
       - zug-lol-backup-restore:/docker-entrypoint-initdb.d
       - zug-lol-db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       start_period: 10s
       interval: 5s
       timeout: 5s
@@ -290,6 +292,57 @@ services:
     restart: unless-stopped
     env_file:
       - zug-lol.env
+
+  matheworkout-app:
+    build: https://github.com/Dosenpfand/matheworkout.git
+    restart: unless-stopped
+    ports:
+      - 8086:80
+    environment:
+      - VIRTUAL_HOST=matheworkout.at,www.matheworkout.at
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=matheworkout.at,www.matheworkout.at
+    env_file:
+      - matheworkout.env
+    volumes:
+      - matheworkout-static:/app/app/static
+    depends_on:
+        matheworkout-db:
+          condition: service_healthy
+        proxy:
+          condition: service_started
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      start_period: 10s
+      interval: 5m
+      timeout: 5s
+      retries: 10
+    networks:
+      - proxy-tier
+      - matheworkout
+
+  matheworkout-db:
+    image: postgres:alpine
+    restart: unless-stopped
+    env_file:
+      - matheworkout.env
+    volumes:
+      - matheworkout-backup-restore:/docker-entrypoint-initdb.d
+      - matheworkout-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - matheworkout
+
+  matheworkout-dyndns:
+    build: ./dyndns
+    restart: unless-stopped
+    env_file:
+      - matheworkout.env
 
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
@@ -430,6 +483,9 @@ volumes:
   zib2_static:
   zug-lol-db:
   zug-lol-backup-restore:
+  matheworkout-db:
+  matheworkout-backup-restore:
+  matheworkout-static:
 
 networks:
   proxy-tier:
@@ -437,3 +493,4 @@ networks:
   immich:
   changedetection:
   zug-lol:
+  matheworkout:

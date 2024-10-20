@@ -22,6 +22,10 @@ echo "### START backup from: ${TIMESTAMP} ###" >> ${BACKUP_LOG_STDOUT}
     > /data/backup_postgres/postgresql_backup_zug-lol.sql.gz 2>> ${BACKUP_LOG_STDERR} \
     || true
 
+(PGPASSWORD=${MATHEWORKOUT_DB_PASSWORD} pg_dumpall -h matheworkout-db -U ${MATHEWORKOUT_DB_USERNAME} | gzip) \
+    > /data/backup_postgres/postgresql_backup_matheworkout.sql.gz 2>> ${BACKUP_LOG_STDERR} \
+    || true
+
 restic snapshots 2>> ${BACKUP_LOG_STDERR} 1>> ${BACKUP_LOG_STDOUT} \
     || restic init 2>> ${BACKUP_LOG_STDERR} 1>> ${BACKUP_LOG_STDOUT}
 

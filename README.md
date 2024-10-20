@@ -15,6 +15,7 @@ Container configuration for a home server setup.
 * Photo archiving using Immich
 * Website watches via changedetection.io
 * Hosting zug.lol
+* Hosting matheworkout.at
 
 ## Configuration
 
@@ -99,6 +100,10 @@ HETZNER_AUTH_API_TOKEN=
 HETZNER_ZONE_NAME=zug.lol
 HETZNER_RECORD_NAME=@
 ```
+
+### matheworkout.env
+
+TODO!
 
 ## Deploy
 
