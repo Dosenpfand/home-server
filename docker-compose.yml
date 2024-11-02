@@ -352,10 +352,10 @@ services:
       - immich.env
     environment:
       - VIRTUAL_HOST=photos.sad.bz
-      - VIRTUAL_PORT=3001
+      - VIRTUAL_PORT=2283
       - LETSENCRYPT_HOST=photos.sad.bz
     ports:
-      - 2283:3001
+      - 2283:2283
     networks:
       - immich
       - proxy-tier
