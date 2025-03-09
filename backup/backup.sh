@@ -191,7 +191,7 @@ main() {
     CMD="PGPASSWORD=${ZUG_DB_PASSWORD} pg_dumpall -h zug-lol-db -U ${ZUG_DB_USERNAME} | gzip > /data/backup_postgres/postgresql_backup_zug-lol.sql.gz"
     eval "$CMD" 2>> "${BACKUP_LOG_STDERR}" || handle_failure "Failed to backup zug-lol-db" "$CMD"
 
-    if ! restic -r "${RESTIC_REPOSITORY}" snapshots &>> "${BACKUP_LOG_STDERR}"; then
+    if ! restic -r "${RESTIC_REPOSITORY}" snapshots 2>> "${BACKUP_LOG_STDERR}"; then
         echo "Initializing restic repository..." >> "${BACKUP_LOG_STDOUT}"
         restic -r "${RESTIC_REPOSITORY}" init 2>> "${BACKUP_LOG_STDERR}" || handle_failure "Failed to initialize restic repository" "restic init"
     fi
