@@ -13,7 +13,6 @@ Container configuration for a home server setup.
 * Geocoder using Nominatim
 * Flask web apps
 * Photo archiving using Immich
-* Website watches via changedetection.io
 * Hosting zug.lol
 
 ## Configuration
