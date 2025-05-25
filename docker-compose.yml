@@ -370,6 +370,22 @@ services:
     command: bash -c "/code/create_env.sh; exec cron -f"
     init: true
 
+  falschparker:
+    build: https://github.com/Dosenpfand/falschparker.git
+    restart: unless-stopped
+    ports:
+      - 8086:8000
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+    environment:
+      - VIRTUAL_HOST=falschparker.sad.bz
+      - VIRTUAL_PORT=8000
+      - LETSENCRYPT_HOST=falschparker.sad.bz
+    env_file:
+      - falschparker.env
+
 volumes:
   postgres: # TODO: rename without losing data!
   nextcloud:
