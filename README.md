@@ -37,6 +37,7 @@ POSTGRES_USER=
 
 ```
 WG_HOST=
+PASSWORD_HASH= # https://github.com/wg-easy/wg-easy/blob/v14/How_to_generate_an_bcrypt_hash.md
 ```
 
 ## immich.env
