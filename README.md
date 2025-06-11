@@ -37,7 +37,6 @@ POSTGRES_USER=
 
 ```
 WG_HOST=
-PASSWORD=
 ```
 
 ## immich.env
