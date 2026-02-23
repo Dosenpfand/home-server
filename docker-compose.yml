@@ -232,12 +232,12 @@ services:
     env_file:
       - zug-lol.env
     depends_on:
-        zug-lol-db:
-          condition: service_healthy
-        proxy:
-          condition: service_started
+      zug-lol-db:
+        condition: service_healthy
+      proxy:
+        condition: service_started
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      test: ["CMD", "curl", "-f", "http://localhost"]
       start_period: 10s
       interval: 5m
       timeout: 5s
@@ -267,7 +267,7 @@ services:
       - zug-lol-backup-restore:/docker-entrypoint-initdb.d
       - zug-lol-db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       start_period: 10s
       interval: 5s
       timeout: 5s
@@ -346,7 +346,7 @@ services:
     env_file:
       - zib2.env
     volumes:
-        - zib2_static:/code/app/static
+      - zib2_static:/code/app/static
 
   zib2-cron:
     build: https://github.com/Dosenpfand/zib2-podcast.git
@@ -356,7 +356,7 @@ services:
     env_file:
       - zib2.env
     volumes:
-        - zib2_static:/code/app/static
+      - zib2_static:/code/app/static
     command: bash -c "/code/create_env.sh; exec cron -f"
     init: true
 
