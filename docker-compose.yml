@@ -376,6 +376,22 @@ services:
     env_file:
       - falschparker.env
 
+  boulderbar-capacity-tracker:
+    build: https://github.com/Dosenpfand/boulderbar-capacity-tracker.git
+    restart: unless-stopped
+    ports:
+      - 8087:5000
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+    environment:
+      - VIRTUAL_HOST=bb.sad.bz
+      - VIRTUAL_PORT=5000
+      - LETSENCRYPT_HOST=bb.sad.bz
+    volumes:
+      - bb_data:/data
+
 volumes:
   postgres: # TODO: rename without losing data!
   nextcloud:
@@ -397,6 +413,7 @@ volumes:
   zib2_static:
   zug-lol-db:
   zug-lol-backup-restore:
+  bb_data:
 
 networks:
   proxy-tier:
