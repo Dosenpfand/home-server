@@ -14,6 +14,7 @@ Container configuration for a home server setup.
 * Flask web apps
 * Photo archiving using Immich
 * Hosting zug.lol
+* Hosting falschparker.sad.bz
 
 ## Configuration
 
@@ -97,6 +98,15 @@ SENTRY_DSN=""
 API_TOKEN=
 ZONE_NAME=zug.lol
 RECORD_NAME=@
+
+```
+
+### falschparker.env
+
+```
+OPENROUTER_API_KEY=
+RATE_LIMIT_REQUESTS=5
+```
 
 ## Deploy
 
