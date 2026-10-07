@@ -392,6 +392,20 @@ services:
     volumes:
       - bb_data:/data
 
+  heatmap:
+    build: https://github.com/Dosenpfand/heatmap.git
+    restart: unless-stopped
+    ports:
+      - 8088:8080
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+    environment:
+      - VIRTUAL_HOST=heatmap.sad.bz
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=heatmap.sad.bz
+
 volumes:
   postgres: # TODO: rename without losing data!
   nextcloud:
