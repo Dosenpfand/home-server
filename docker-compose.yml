@@ -405,6 +405,8 @@ services:
       - VIRTUAL_HOST=heatmap.sad.bz
       - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=heatmap.sad.bz
+    env_file:
+      - heatmap.env
 
 volumes:
   postgres: # TODO: rename without losing data!
