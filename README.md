@@ -4,7 +4,7 @@ Container configuration for a home server setup.
 
 ## Services
 
-* Nextcloud
+* OpenCloud
 * DynDNS update for Hetzner DNS
 * WireGuard
 * Backup using restic
@@ -25,12 +25,10 @@ ZONE_NAME=
 RECORD_NAME=
 ```
 
-### nextcloud.env
+### opencloud.env
 
 ```
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-POSTGRES_USER=
+IDM_ADMIN_PASSWORD= # initial password of the "admin" user, only used on first start
 ```
 
 ### wireguard.env

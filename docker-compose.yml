@@ -1,66 +1,29 @@
 services:
-  nextcloud-postgres:
-    image: postgres:15-alpine
+  opencloud:
+    image: opencloudeu/opencloud:7
     restart: unless-stopped
+    entrypoint: /bin/sh
+    command: ["-c", "opencloud init || true; opencloud server"]
     volumes:
-      - postgres:/var/lib/postgresql/data
-      - backup_postgres:/data/backup_postgres:ro
-    networks:
-      - nextcloud
-    env_file:
-      - nextcloud.env
-
-  nextcloud-redis:
-    image: redis:alpine
-    restart: unless-stopped
-    networks:
-      - nextcloud
-
-  nextcloud-app:
-    image: nextcloud:fpm-alpine
-    restart: unless-stopped
-    volumes:
-      - nextcloud:/var/www/html
-    environment:
-      - POSTGRES_HOST=nextcloud-postgres
-      - REDIS_HOST=nextcloud-redis
-      - OVERWRITEPROTOCOL=https
-    env_file:
-      - nextcloud.env
-    depends_on:
-      - nextcloud-postgres
-      - nextcloud-redis
-    networks:
-      - nextcloud
-
-  nextcloud-web:
-    build: ./nextcloud-web
-    restart: unless-stopped
-    volumes:
-      - nextcloud:/var/www/html:ro
+      - opencloud_config:/etc/opencloud
+      - opencloud_data:/var/lib/opencloud
     environment:
       - VIRTUAL_HOST=cloud.sad.bz
+      - VIRTUAL_PORT=9200
       - LETSENCRYPT_HOST=cloud.sad.bz
+      - OC_URL=https://cloud.sad.bz
+      - PROXY_TLS=false
+      - PROXY_HTTP_ADDR=0.0.0.0:9200
+      - OC_INSECURE=false
+      - IDM_CREATE_DEMO_USERS=false
+      - FRONTEND_ARCHIVER_MAX_SIZE=10000000000
     env_file:
-      - nextcloud.env
+      - opencloud.env
     depends_on:
-      - nextcloud-app
       - proxy
     networks:
       - proxy-tier
-      - nextcloud
-
-  nextcloud-cron:
-    image: nextcloud:fpm-alpine
-    restart: unless-stopped
-    volumes:
-      - nextcloud:/var/www/html
-    entrypoint: /cron.sh
-    depends_on:
-      - nextcloud-postgres
-      - nextcloud-redis
-    networks:
-      - nextcloud
+      - opencloud
 
   proxy:
     build: ./proxy
@@ -76,8 +39,9 @@ services:
       - html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
-      - proxy-tier
-
+      proxy-tier:
+        aliases:
+          - cloud.sad.bz
   letsencrypt:
     image: nginxproxy/acme-companion
     restart: unless-stopped
@@ -130,12 +94,12 @@ services:
       - backup.env
       - zug-lol.env
       - immich.env
-      - nextcloud.env
     volumes:
       - backup_postgres:/data/backup_postgres
       - backup_logs:/data/backup_logs
       - wireguard_config:/data/wireguard_config:ro
-      - nextcloud:/data/nextcloud:ro
+      - opencloud_config:/data/opencloud_config:ro
+      - opencloud_data:/data/opencloud_data:ro
       - certs:/data/certs:ro
       - vhost.d:/data/vhost.d:ro
       - html:/data/html:ro
@@ -145,7 +109,6 @@ services:
       - immich_uploads:/data/immich_uploads:ro
       - zib2_static:/data/zib2_static:ro
     networks:
-      - nextcloud
       - immich
       - zug-lol
 
@@ -389,8 +352,8 @@ services:
       - heatmap.env
 
 volumes:
-  postgres: # TODO: rename without losing data!
-  nextcloud:
+  opencloud_config:
+  opencloud_data:
   certs:
   acme:
   vhost.d:
@@ -412,6 +375,6 @@ volumes:
 
 networks:
   proxy-tier:
-  nextcloud:
+  opencloud:
   immich:
   zug-lol:

@@ -14,8 +14,6 @@ check_required_vars() {
     local missing_vars=()
     for var in \
         HEALTHCHECKS_URL \
-        POSTGRES_PASSWORD \
-        POSTGRES_USER \
         DB_PASSWORD \
         DB_USERNAME \
         ZUG_DB_PASSWORD \
@@ -176,12 +174,6 @@ main() {
     check_dependencies
     check_required_vars
     rotate_logs
-
-    # TODO: Do not user POSTGRES_ variables! Currently relies on order of env_files in compose.yml!
-
-    echo "Backing up Nextcloud PostgreSQL database..." >> "${BACKUP_LOG_STDOUT}"
-    CMD="PGPASSWORD=${POSTGRES_PASSWORD} pg_dumpall -h nextcloud-postgres -U ${POSTGRES_USER} | gzip > /data/backup_postgres/postgresql_backup_nextcloud.sql.gz"
-    eval "$CMD" 2>> "${BACKUP_LOG_STDERR}" || handle_failure "Failed to backup nextcloud-postgres database" "$CMD"
 
     echo "Backing up Immich PostgreSQL database..." >> "${BACKUP_LOG_STDOUT}"
     CMD="PGPASSWORD=${DB_PASSWORD} pg_dumpall -h immich-database -U ${DB_USERNAME} | gzip > /data/backup_postgres/postgresql_backup_immich.sql.gz"
