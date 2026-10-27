@@ -171,26 +171,6 @@ services:
       - jellyfin_cache:/cache
       - deluge_dowloads:/media:ro
 
-  nominatim:
-    build: ./nominatim
-    restart: unless-stopped
-    ports:
-      - 8081:8080
-    networks:
-      - proxy-tier
-    depends_on:
-      - proxy
-    environment:
-      - VIRTUAL_HOST=nominatim.sad.bz
-      - VIRTUAL_PORT=8080
-      - LETSENCRYPT_HOST=nominatim.sad.bz
-      - PBF_URL=https://download.geofabrik.de/europe/austria-latest.osm.pbf
-      - REPLICATION_URL=https://download.geofabrik.de/europe/austria-updates/
-    volumes:
-      - nominatim:/var/lib/postgresql/14/main
-    shm_size: 512mb
-    # TODO: cron update
-
   happy:
     build: https://github.com/Dosenpfand/flask-htmx-bootstrap-example.git
     restart: unless-stopped
@@ -422,7 +402,6 @@ volumes:
   deluge_dowloads:
   jellyfin_config:
   jellyfin_cache:
-  nominatim:
   immich_uploads:
   immich_postgres:
   immich_model_cache:
